@@ -14,8 +14,15 @@
         	var viewWidth = 600,
                 viewHeight = 600;
 
+
 			Crafty.init(viewWidth, viewHeight, document.getElementById('game'));            
 
+            var ATTACK_DIRECTIONS = {
+                LEFT: "LEFT",
+                RIGHT: "RIGHT",
+                UP: "UP",
+                DOWN: "DOWN"
+            }
 
 			//Walls
             Crafty.e('2D, DOM, Solid, Color')
@@ -61,6 +68,36 @@
                         .fourway(300)
                         .color('#000000')
                         .stopOnSolids()
+                        .attackOnSpace()
+
+                    this._attackDirection = ATTACK_DIRECTIONS.DOWN;
+
+                    this.bind('Moved', function(movement) {
+                        console.log(movement);
+                        if (movement.axis == "x") {
+                            if (this.x - movement.oldValue < 0) {
+                                this._attackDirection = ATTACK_DIRECTIONS.LEFT;
+                            } else {
+                                this._attackDirection = ATTACK_DIRECTIONS.RIGHT;
+                            }
+                        } else {
+                            if (this.y - movement.oldValue < 0) {
+                                this._attackDirection = ATTACK_DIRECTIONS.UP;
+                            } else {
+                                this._attackDirection = ATTACK_DIRECTIONS.DOWN;
+                            }
+                        };
+
+                        /*if (this.axis == 'y') {
+                            if (this.oldValue < Crafty('PlayerCharacter').y) {
+                                var dir = down
+                                console.log(dir)
+                            }
+                            if (oldValue > Crafty('PlayerCharacter').y) {
+                                var dir = up
+                            }
+                        }*/
+                    })
        	        },
        	        stopOnSolids: function() {
                     this.onHit('Solid', this.stopMovement);
@@ -69,23 +106,49 @@
                 stopMovement: function(hit_vals) {
                     this.x -= this.dx;
                     this.y -= this.dy;
+                },
+                attackOnSpace: function() {
+                    var hero = this;
+                    this.bind('KeyDown', function(e) {
+                        if (e.key == Crafty.keys.SPACE) {
+                            var attack = Crafty.e('PlayerAttack');
+                            switch(hero._attackDirection) {
+                                case ATTACK_DIRECTIONS.RIGHT:
+                                    attack.attr({x: hero.x + 30, y: hero.y})
+                                    break;
+                                case ATTACK_DIRECTIONS.LEFT:
+                                    attack.attr({x: hero.x - 30, y: hero.y})
+                                    break;
+                                case ATTACK_DIRECTIONS.UP:
+                                    attack.attr({x: hero.x, y: hero.y - 30})
+                                    break;
+                                case ATTACK_DIRECTIONS.DOWN:
+                                    attack.attr({x: hero.x, y: hero.y + 30})
+                                    break;
+                            }
+                        }
+                    	setTimeout(function() {Crafty('PlayerAttack').destroy()}, 50)
+                    });
                 }
-            });
+            }),
 
             Crafty.c('PlayerAttack', {
             	init: function() {
             		this.requires('2D, DOM, PAttack, Collision, Color')
-            		.attr({w: 30, h: 30})
+            			.attr({w: 30, h: 30})
+            			.color('#ff0000')
             	}
             });
 
             Crafty.c('Enemy', {
             	init: function() {
-            		this.requires('2D, DOM, Enemy, Collision, Motion, Solid, Color')
+            		this.requires('2D, DOM, Enemy, Collision, Motion, Solid, Motion, Color')
             			.color('#d3d3d3')
             			.attr({w:30, h: 30})
             			.stopOnSolids()
-
+            			.hitByAttack()
+                        .combat
+                    this.hp = 3;
             	},
             	stopOnSolids: function() {
                     this.onHit('Solid', this.stopMovement);
@@ -94,6 +157,27 @@
                 stopMovement: function(hit_vals) {
                     this.x -= this.dx;
                     this.y -= this.dy;
+                },
+                hitByAttack: function() {
+                	this.checkHits('PAttack')
+                    .bind('HitOn', function() {
+                        console.log("hit!")
+                        this.hp--;
+                        console.log("remaining hp", this.hp)
+                        if (this.hp <= 0) {
+                            this.destroy();
+                        }
+                    })
+                    return this;
+                },
+                //Not Working ATM
+                combat: function() {
+                    if (this.x > Crafty('PlayerCharacter').x) {
+                        this.vel.x = -100
+                    }
+                    if (this.x < Crafty('PlayerCharacter').x) {
+                        this.vel.x = 100
+                    }
                 }
             });
 
