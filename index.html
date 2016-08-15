@@ -60,6 +60,9 @@
             	.attr({x: 500, y: 400, w: 50, h: 50})
             	.color('#f4a460')
 
+
+            
+
             //PC component
         	Crafty.c('PlayerCharacter', {
                 init: function() {
@@ -73,7 +76,6 @@
                     this._attackDirection = ATTACK_DIRECTIONS.DOWN;
 
                     this.bind('Moved', function(movement) {
-                        console.log(movement);
                         if (movement.axis == "x") {
                             if (this.x - movement.oldValue < 0) {
                                 this._attackDirection = ATTACK_DIRECTIONS.LEFT;
@@ -87,17 +89,7 @@
                                 this._attackDirection = ATTACK_DIRECTIONS.DOWN;
                             }
                         };
-
-                        /*if (this.axis == 'y') {
-                            if (this.oldValue < Crafty('PlayerCharacter').y) {
-                                var dir = down
-                                console.log(dir)
-                            }
-                            if (oldValue > Crafty('PlayerCharacter').y) {
-                                var dir = up
-                            }
-                        }*/
-                    })
+                    });
        	        },
        	        stopOnSolids: function() {
                     this.onHit('Solid', this.stopMovement);
@@ -147,8 +139,9 @@
             			.attr({w:30, h: 30})
             			.stopOnSolids()
             			.hitByAttack()
-                        .combat
+                        .combat()
                     this.hp = 3;
+                    this._attackDirection = ATTACK_DIRECTIONS.DOWN;
             	},
             	stopOnSolids: function() {
                     this.onHit('Solid', this.stopMovement);
@@ -172,22 +165,77 @@
                 },
                 //Not Working ATM
                 combat: function() {
-                    if (this.x > Crafty('PlayerCharacter').x) {
-                        this.vel.x = -100
-                    }
-                    if (this.x < Crafty('PlayerCharacter').x) {
-                        this.vel.x = 100
-                    }
+                    var enemy = this
+                    setInterval (function() {
+                       if (enemy.x > Crafty('PlayerCharacter').x) {
+                            enemy.velocity().x = -100
+                        }
+                        if (enemy.x < Crafty('PlayerCharacter').x) {
+                            enemy.velocity().x = 100
+                        } 
+                        if (enemy.y > Crafty('PlayerCharacter').y) {
+                            enemy.velocity().y = -100
+                        }
+                        if (enemy.y < Crafty('PlayerCharacter').y) {
+                            enemy.velocity().y = 100
+                        } 
+                        if (-30 < enemy.x - Crafty('PlayerCharacter').x < 30 || -30 < enemy.y - Crafty('PlayerCharacter').y < 30)
+                            var villain = this;
+                            villain.bind('Moved', function(movement) {
+                                if (movement.axis == "x") {
+                                    if (villain.x - movement.oldValue < 0) {
+                                        villain._attackDirection = ATTACK_DIRECTIONS.LEFT;
+                                    } else {
+                                        villain._attackDirection = ATTACK_DIRECTIONS.RIGHT;
+                                    }
+                                } else {
+                                    if (villain.y - movement.oldValue < 0) {
+                                        villain._attackDirection = ATTACK_DIRECTIONS.UP;
+                                    } else {
+                                        villain._attackDirection = ATTACK_DIRECTIONS.DOWN;
+                                    }
+                                };
+                            });
+                            enemy.velocity() = 0;
+                            var attack = Crafty.e('EnemyAttack');
+                            setTimeout (function() {
+                                switch(villain._attackDirection) {
+                                    case ATTACK_DIRECTIONS.RIGHT:
+                                        attack.attr({x: villain.x + 30, y: villain.y})
+                                        break;
+                                    case ATTACK_DIRECTIONS.LEFT:
+                                        attack.attr({x: villain.x - 30, y: villain.y})
+                                        break;
+                                    case ATTACK_DIRECTIONS.UP:
+                                        attack.attr({x: villain.x, y: villain.y - 30})
+                                        break;
+                                    case ATTACK_DIRECTIONS.DOWN:
+                                        attack.attr({x: villain.x, y: villain.y + 30})
+                                        break;
+                                };
+                            }, 50)
+                            setTimeout (function() {Crafty('EnemyAttack').destroy()}, 100)
+                    }, 10)
+                        
+                }
+            });
+
+            Crafty.c('EnemyAttack', {
+                init: function() {
+                    this.requires('2D, DOM, EAttack, Collision, Color')
+                        .attr({w: 30, h: 30})
+                        .color('#ff0000')
                 }
             });
 
             var enemies = [];
 
+            Crafty.e('PlayerCharacter').attr({x: 285, y:285});
             enemies.push(Crafty.e('Enemy').attr({x: 5, y: 5}))
             enemies.push(Crafty.e('Enemy').attr({x: 565, y: 400}))
             enemies.push(Crafty.e('Enemy').attr({x: 200, y: 565}))
 
-            Crafty.e('PlayerCharacter').attr({x: 285, y:285});
+  
 
         </script>
     </body>
