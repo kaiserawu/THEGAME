@@ -166,8 +166,23 @@
                 //Not Working ATM
                 combat: function() {
                     var enemy = this
-                    setInterval (function() {
-                       if (enemy.x > Crafty('PlayerCharacter').x) {
+
+                    enemy.bind('Moved', function(movement) {
+                        if (movement.axis == "x") {
+                            if (enemy.x - movement.oldValue < 0) {
+                                enemy._attackDirection = ATTACK_DIRECTIONS.LEFT;
+                            } else {
+                                enemy._attackDirection = ATTACK_DIRECTIONS.RIGHT;
+                            }
+                        } else {
+                            if (enemy.y - movement.oldValue < 0) {
+                                enemy._attackDirection = ATTACK_DIRECTIONS.UP;
+                            } else {
+                                enemy._attackDirection = ATTACK_DIRECTIONS.DOWN;
+                            }
+                        };
+
+                        if (enemy.x > Crafty('PlayerCharacter').x) {
                             enemy.velocity().x = -100
                         }
                         if (enemy.x < Crafty('PlayerCharacter').x) {
@@ -179,44 +194,34 @@
                         if (enemy.y < Crafty('PlayerCharacter').y) {
                             enemy.velocity().y = 100
                         } 
-                        if (-30 < enemy.x - Crafty('PlayerCharacter').x < 30 || -30 < enemy.y - Crafty('PlayerCharacter').y < 30)
-                            var villain = this;
-                            villain.bind('Moved', function(movement) {
-                                if (movement.axis == "x") {
-                                    if (villain.x - movement.oldValue < 0) {
-                                        villain._attackDirection = ATTACK_DIRECTIONS.LEFT;
-                                    } else {
-                                        villain._attackDirection = ATTACK_DIRECTIONS.RIGHT;
-                                    }
-                                } else {
-                                    if (villain.y - movement.oldValue < 0) {
-                                        villain._attackDirection = ATTACK_DIRECTIONS.UP;
-                                    } else {
-                                        villain._attackDirection = ATTACK_DIRECTIONS.DOWN;
-                                    }
-                                };
-                            });
-                            enemy.velocity() = 0;
+
+                        var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
+                        var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
+
+                        console.log(x_distance, y_distance);
+
+                        if (x_distance < 30 && y_distance < 30) {
+                            //enemy.velocity() = 0;
                             var attack = Crafty.e('EnemyAttack');
                             setTimeout (function() {
-                                switch(villain._attackDirection) {
+                                switch(enemy._attackDirection) {
                                     case ATTACK_DIRECTIONS.RIGHT:
-                                        attack.attr({x: villain.x + 30, y: villain.y})
+                                        attack.attr({x: enemy.x + 30, y: enemy.y})
                                         break;
                                     case ATTACK_DIRECTIONS.LEFT:
-                                        attack.attr({x: villain.x - 30, y: villain.y})
+                                        attack.attr({x: enemy.x - 30, y: enemy.y})
                                         break;
                                     case ATTACK_DIRECTIONS.UP:
-                                        attack.attr({x: villain.x, y: villain.y - 30})
+                                        attack.attr({x: enemy.x, y: enemy.y - 30})
                                         break;
                                     case ATTACK_DIRECTIONS.DOWN:
-                                        attack.attr({x: villain.x, y: villain.y + 30})
+                                        attack.attr({x: enemy.x, y: enemy.y + 30})
                                         break;
                                 };
-                            }, 50)
-                            setTimeout (function() {Crafty('EnemyAttack').destroy()}, 100)
-                    }, 10)
-                        
+                            }, 50);
+                            setTimeout (function() {Crafty('EnemyAttack').destroy()}, 100);
+                        }
+                    });
                 }
             });
 
@@ -234,6 +239,10 @@
             enemies.push(Crafty.e('Enemy').attr({x: 5, y: 5}))
             enemies.push(Crafty.e('Enemy').attr({x: 565, y: 400}))
             enemies.push(Crafty.e('Enemy').attr({x: 200, y: 565}))
+
+            for (var i = 0; i < enemies.length; i++) {
+                enemies[i].velocity().x = 1;
+            }
 
   
 
