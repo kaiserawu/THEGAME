@@ -121,7 +121,14 @@
                         }
                     	setTimeout(function() {Crafty('PlayerAttack').destroy()}, 50)
                     });
-                }
+                },
+                hitByAttack: function() {
+                    this.checkHits('EAttack')
+                    .bind('HitOn', function() {
+                        console.log("hit!")
+                    })
+                    return this;
+                },
             }),
 
             Crafty.c('PlayerAttack', {
@@ -151,36 +158,26 @@
                     this.x -= this.dx;
                     this.y -= this.dy;
                 },
-                hitByAttack: function() {
-                	this.checkHits('PAttack')
-                    .bind('HitOn', function() {
-                        console.log("hit!")
-                        this.hp--;
-                        console.log("remaining hp", this.hp)
-                        if (this.hp <= 0) {
-                            this.destroy();
-                        }
-                    })
-                    return this;
-                },
                 //Not Working ATM
                 combat: function() {
                     var enemy = this
 
                     enemy.bind('Moved', function(movement) {
-                        if (movement.axis == "x") {
-                            if (enemy.x - movement.oldValue < 0) {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.LEFT;
-                            } else {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.RIGHT;
-                            }
-                        } else {
-                            if (enemy.y - movement.oldValue < 0) {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.UP;
-                            } else {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.DOWN;
-                            }
-                        };
+                        var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
+                        var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
+
+                        if (Crafty('PlayerCharacter').x < enemy.x) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.LEFT;
+                        }
+                        if (Crafty('PlayerCharacter').x > enemy.x) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.RIGHT;
+                        }
+                        if (Crafty('PlayerCharacter').y < enemy.y) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.UP;
+                        }
+                        if (Crafty('PlayerCharacter').x < enemy.x) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.DOWN;
+                        }
 
                         if (enemy.x > Crafty('PlayerCharacter').x) {
                             enemy.velocity().x = -100
@@ -188,15 +185,19 @@
                         if (enemy.x < Crafty('PlayerCharacter').x) {
                             enemy.velocity().x = 100
                         } 
+                        if (x_distance < 5) {
+                            enemy.velocity().x = 0
+                        }
                         if (enemy.y > Crafty('PlayerCharacter').y) {
                             enemy.velocity().y = -100
                         }
                         if (enemy.y < Crafty('PlayerCharacter').y) {
                             enemy.velocity().y = 100
                         } 
+                        if (y_distance < 5) {
+                            enemy.velocity().y = 0
+                        }
 
-                        var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
-                        var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
 
                         console.log(x_distance, y_distance);
 
