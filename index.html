@@ -146,7 +146,7 @@
             			.attr({w:30, h: 30})
             			.stopOnSolids()
             			.hitByAttack()
-                        .combat()
+                        //.combat()
                     this.hp = 3;
                     this._attackDirection = ATTACK_DIRECTIONS.DOWN;
             	},
@@ -158,8 +158,20 @@
                     this.x -= this.dx;
                     this.y -= this.dy;
                 },
+                hitByAttack: function() {
+                	this.checkHits('PAttack')
+                    .bind('HitOn', function() {
+                        console.log("hit!")
+                        this.hp--;
+                        console.log("remaining hp", this.hp)
+                        if (this.hp <= 0) {
+                            this.destroy();
+                        }
+                    })
+                    return this;
+                },
                 //Not Working ATM
-                combat: function() {
+                /*combat: function() {
                     var enemy = this
 
                     enemy.bind('Moved', function(movement) {
@@ -223,13 +235,27 @@
                             setTimeout (function() {Crafty('EnemyAttack').destroy()}, 100);
                         }
                     });
-                }
+                }*/
             });
+            
+            Crafty.c('EnemyHitbox', {
+                init: function() {
+                    this.requires('2D, DOM, Collision, eAttackHitbox, Color')
+                    this.checkHits('PlayerCharacter')
+                    .bind('HitOn', function() {
+                        var hitbox = this
+                        this.color('red')
+                        setTimeout(function () {hitbox.color('')}, 100)
+
+                    })
+                    .attr({ w: 30, h: 30})
+                }
+            })
 
             Crafty.c('EnemyAttack', {
                 init: function() {
                     this.requires('2D, DOM, EAttack, Collision, Color')
-                        .attr({w: 30, h: 30})
+                        .attr({ w: 30, h: 30})
                         .color('#ff0000')
                 }
             });
@@ -237,15 +263,15 @@
             var enemies = [];
 
             Crafty.e('PlayerCharacter').attr({x: 285, y:285});
-            enemies.push(Crafty.e('Enemy').attr({x: 5, y: 5}))
-            enemies.push(Crafty.e('Enemy').attr({x: 565, y: 400}))
-            enemies.push(Crafty.e('Enemy').attr({x: 200, y: 565}))
+            enemies.push(Crafty.e('Enemy').attr({x: 5, y: 5}).attach(Crafty.e('EnemyHitbox').attr({x: Crafty('Enemy').x + 30, y: Crafty('Enemy').y})))
+            enemies.push(Crafty.e('Enemy').attr({x: 565, y: 400}).attach(Crafty.e('EnemyHitbox').attr({x: Crafty('Enemy').x + 30, y: Crafty('Enemy').y})))
+            enemies.push(Crafty.e('Enemy').attr({x: 200, y: 565}).attach(Crafty.e('EnemyHitbox').attr({x: Crafty('Enemy').x + 30, y: Crafty('Enemy').y})))
 
             for (var i = 0; i < enemies.length; i++) {
-                enemies[i].velocity().x = 1;
+                enemies[i].velocity().x = 10;
             }
 
-  
+            console.log(Crafty('Enemy').x)
 
         </script>
     </body>
