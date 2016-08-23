@@ -72,6 +72,7 @@
                         .color('#000000')
                         .stopOnSolids()
                         .attackOnSpace()
+                        .hitByAttack()
 
                     this._attackDirection = ATTACK_DIRECTIONS.DOWN;
 
@@ -123,9 +124,15 @@
                     });
                 },
                 hitByAttack: function() {
+                    //cannot read property of undefined?
                     this.checkHits('EAttack')
                     .bind('HitOn', function() {
                         console.log("hit!")
+                        this.hp--;
+                        console.log("remaining hp", this.hp)
+                        if (this.hp <= 0) {
+                            this.destroy();
+                        }
                     })
                     return this;
                 },
@@ -146,7 +153,8 @@
             			.attr({w:30, h: 30})
             			.stopOnSolids()
             			.hitByAttack()
-                        //.combat()
+                        .combat()
+
                     this.hp = 3;
                     this._attackDirection = ATTACK_DIRECTIONS.DOWN;
             	},
@@ -171,25 +179,26 @@
                     return this;
                 },
                 //Not Working ATM
-                /*combat: function() {
+                combat: function() {
                     var enemy = this
+                    Crafty('PlayerCharacter').onHit('eAttackHitbox', function() {
+                        if (Crafty('PlayerCharacter').hit('EnemyHitboxR')) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.RIGHT;
+                        }
+                        if (Crafty('PlayerCharacter').hit('EnemyHitboxL')) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.LEFT;
+                        }
+                        if (Crafty('PlayerCharacter').hit('EnemyHitboxU')) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.UP;
+                        }
+                        if (Crafty('PlayerCharacter').hit('EnemyHitboxD')) {
+                            enemy._attackDirection = ATTACK_DIRECTIONS.DOWN;
+                        }
+                    })
 
                     enemy.bind('Moved', function(movement) {
                         var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
                         var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
-
-                        if (Crafty('PlayerCharacter').x < enemy.x) {
-                            enemy._attackDirection = ATTACK_DIRECTIONS.LEFT;
-                        }
-                        if (Crafty('PlayerCharacter').x > enemy.x) {
-                            enemy._attackDirection = ATTACK_DIRECTIONS.RIGHT;
-                        }
-                        if (Crafty('PlayerCharacter').y < enemy.y) {
-                            enemy._attackDirection = ATTACK_DIRECTIONS.UP;
-                        }
-                        if (Crafty('PlayerCharacter').x < enemy.x) {
-                            enemy._attackDirection = ATTACK_DIRECTIONS.DOWN;
-                        }
 
                         if (enemy.x > Crafty('PlayerCharacter').x) {
                             enemy.velocity().x = -100
@@ -210,44 +219,70 @@
                             enemy.velocity().y = 0
                         }
 
+                        var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
+                        var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
 
-                        console.log(x_distance, y_distance);
+                    })
 
-                        if (x_distance < 30 && y_distance < 30) {
-                            //enemy.velocity() = 0;
+                    Crafty('PlayerCharacter').checkHits('eAttackHitbox')
+                        .bind('HitOn', function() {
                             var attack = Crafty.e('EnemyAttack');
+                            enemy.velocity().x = 0
+                            enemy.velocity().y = 0
                             setTimeout (function() {
                                 switch(enemy._attackDirection) {
                                     case ATTACK_DIRECTIONS.RIGHT:
-                                        attack.attr({x: enemy.x + 30, y: enemy.y})
+                                            attack.attr({x: enemy.x + 30, y: enemy.y})
+                                            console.log('swing')
+                                            enemy.velocity().x = 1
                                         break;
                                     case ATTACK_DIRECTIONS.LEFT:
                                         attack.attr({x: enemy.x - 30, y: enemy.y})
+                                        console.log('swing')
+                                        enemy.velocity().x = 1
                                         break;
                                     case ATTACK_DIRECTIONS.UP:
-                                        attack.attr({x: enemy.x, y: enemy.y - 30})
+                                        attack.attr({x: enemy.x, y: enemy.y + 30})
+                                        console.log('swing')
+                                        enemy.velocity().x = 1
                                         break;
                                     case ATTACK_DIRECTIONS.DOWN:
-                                        attack.attr({x: enemy.x, y: enemy.y + 30})
+                                        attack.attr({x: enemy.x, y: enemy.y - 30})
+                                        console.log('swing')
+                                        enemy.velocity().x = 1
                                         break;
                                 };
-                            }, 50);
+                                
+                            }, 750);
                             setTimeout (function() {Crafty('EnemyAttack').destroy()}, 100);
-                        }
-                    });
-                }*/
+                        })
+                }
             });
             
-            Crafty.c('EnemyHitbox', {
+            Crafty.c('EnemyHitboxR', {
                 init: function() {
                     this.requires('2D, DOM, Collision, eAttackHitbox, Color')
-                    this.checkHits('PlayerCharacter')
-                    .bind('HitOn', function() {
-                        var hitbox = this
-                        this.color('red')
-                        setTimeout(function () {hitbox.color('')}, 100)
+                    .attr({ w: 30, h: 30})
+                }
+            })
 
-                    })
+            Crafty.c('EnemyHitboxL', {
+                init: function() {
+                    this.requires('2D, DOM, Collision, eAttackHitbox, Color')
+                    .attr({ w: 30, h: 30})
+                }
+            })
+
+            Crafty.c('EnemyHitboxU', {
+                init: function() {
+                    this.requires('2D, DOM, Collision, eAttackHitbox, Color')
+                    .attr({ w: 30, h: 30})
+                }
+            })
+
+            Crafty.c('EnemyHitboxD', {
+                init: function() {
+                    this.requires('2D, DOM, Collision, eAttackHitbox, Color')
                     .attr({ w: 30, h: 30})
                 }
             })
@@ -263,15 +298,41 @@
             var enemies = [];
 
             Crafty.e('PlayerCharacter').attr({x: 285, y:285});
-            enemies.push(Crafty.e('Enemy').attr({x: 5, y: 5}).attach(Crafty.e('EnemyHitbox').attr({x: Crafty('Enemy').x + 30, y: Crafty('Enemy').y})))
-            enemies.push(Crafty.e('Enemy').attr({x: 565, y: 400}).attach(Crafty.e('EnemyHitbox').attr({x: Crafty('Enemy').x + 30, y: Crafty('Enemy').y})))
-            enemies.push(Crafty.e('Enemy').attr({x: 200, y: 565}).attach(Crafty.e('EnemyHitbox').attr({x: Crafty('Enemy').x + 30, y: Crafty('Enemy').y})))
+            enemies.push(
+                Crafty.e('Enemy')
+                    .attr({x: 5, y: 5})
+                    .addComponent('Enemy1')
+                    .attach(Crafty.e('EnemyHitboxR').attr({x: Crafty('Enemy1').x + 30, y: Crafty('Enemy1').y}))
+                    .attach(Crafty.e('EnemyHitboxL').attr({x: Crafty('Enemy1').x - 30, y: Crafty('Enemy1').y}))
+                    .attach(Crafty.e('EnemyHitboxU').attr({x: Crafty('Enemy1').x, y: Crafty('Enemy1').y + 30}))
+                    .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy1').x, y: Crafty('Enemy1').y - 30}))
+            )
+            enemies.push(
+                Crafty.e('Enemy')
+                    .attr({x: 300, y: 400})
+                    .addComponent('Enemy2')
+                    .attach(Crafty.e('EnemyHitboxR').attr({x: Crafty('Enemy2').x + 30, y: Crafty('Enemy2').y}))
+                    .attach(Crafty.e('EnemyHitboxL').attr({x: Crafty('Enemy2').x - 30, y: Crafty('Enemy2').y}))
+                    .attach(Crafty.e('EnemyHitboxU').attr({x: Crafty('Enemy2').x, y: Crafty('Enemy2').y + 30}))
+                    .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy2').x, y: Crafty('Enemy2').y - 30}))
+            )
+            enemies.push(
+                Crafty.e('Enemy')
+                    .attr({x: 100, y: 565})
+                    .addComponent('Enemy3')
+                    .attach(Crafty.e('EnemyHitboxR').attr({x: Crafty('Enemy3').x + 30, y: Crafty('Enemy3').y}))
+                    .attach(Crafty.e('EnemyHitboxL').attr({x: Crafty('Enemy3').x - 30, y: Crafty('Enemy3').y}))
+                    .attach(Crafty.e('EnemyHitboxU').attr({x: Crafty('Enemy3').x, y: Crafty('Enemy3').y + 30}))
+                    .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy3').x, y: Crafty('Enemy3').y - 30}))
+            )
+
+
+
+
 
             for (var i = 0; i < enemies.length; i++) {
-                enemies[i].velocity().x = 10;
+                enemies[i].velocity().x = 1;
             }
-
-            console.log(Crafty('Enemy').x)
 
         </script>
     </body>
