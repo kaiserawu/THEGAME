@@ -15,9 +15,12 @@
                 viewHeight = 600;
 
 
-			Crafty.init(viewWidth, viewHeight, document.getElementById('game'));            
+			Crafty.init(viewWidth, viewHeight, document.getElementById('game'));  
+
+            var past1stScreen = false          
 
             Crafty.scene("1stScreen", function() {
+
                 var ATTACK_DIRECTIONS = {
                     LEFT: "LEFT",
                     RIGHT: "RIGHT",
@@ -35,9 +38,6 @@
                     .color('#F00')
 
 
-                Crafty.e('2D, DOM, Solid, Color')
-                    .attr({x: 0, y: 0, w: viewWidth, h: 1})
-                    .color('#F00')
 
                 Crafty.e('2D, DOM, Solid, Color')
                     .attr({x: 0, y: 599, w: viewWidth, h: 1})
@@ -73,8 +73,9 @@
                             .color('#000000')
                             .stopOnSolids()
                             .attackOnSpace()
-                            //.hitByAttack()
+                            .hitByAttack()
 
+                        this.hp = 5
                         this._attackDirection = ATTACK_DIRECTIONS.DOWN;
 
                         this.bind('Moved', function(movement) {
@@ -123,16 +124,19 @@
                             }
                         	setTimeout(function() {Crafty('PlayerAttack').destroy()}, 50)
                         });
+                        return this;
                     },
                     hitByAttack: function() {
-                        //cannot read property of undefined?
                         this.checkHits('EAttack')
                         .bind('HitOn', function() {
                             console.log("hit!")
+                            console.log(arguments);
                             this.hp--;
                             console.log("remaining hp", this.hp)
                             if (this.hp <= 0) {
                                 this.destroy();
+                                Crafty.stop();
+                                alert('You Lose!')
                             }
                         })
                         return this;
@@ -153,8 +157,16 @@
                 			.color('#d3d3d3')
                 			.attr({w:30, h: 30})
                 			.stopOnSolids()
-                			.hitByAttack()
-                            .combat()
+                			.hitByAttack();
+
+                        this._rightHitbox = Crafty.e('EnemyHitbox').attr({x: this.x + 30, y: this.y});
+                        this._leftHitbox = Crafty.e('EnemyHitbox').attr({x: this.x - 30, y: this.y});
+                        this._upHitbox = Crafty.e('EnemyHitbox').attr({x: this.x, y: this.y + 30});
+                        this._downHitbox = Crafty.e('EnemyHitbox').attr({x: this.x, y: this.y - 30});
+
+                        this.attach(this._rightHitbox, this._leftHitbox, this._upHitbox, this._downHitbox);
+
+                        this.combat();
 
                         this.hp = 3;
                         this._attackDirection = ATTACK_DIRECTIONS.DOWN;
@@ -181,21 +193,30 @@
                     },
                     //Not Working ATM
                     combat: function() {
-                        var enemy = this
-                        Crafty('PlayerCharacter').onHit('eAttackHitbox', function() {
-                            if (Crafty('PlayerCharacter').hit('EnemyHitboxR')) {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.RIGHT;
+                        var enemy = this;
+
+                        var createAttackOnHit = function(direction, x, y) {
+                            return function() {
+                                enemy._attackDirection = direction;
+                            
+                                enemy.velocity().x = 0
+                                enemy.velocity().y = 0
+
+                                setTimeout (function() {
+                                    var attack = Crafty.e('EnemyAttack').attr({x: enemy.x + x, y: enemy.y + y});
+                                    setTimeout(function() {attack.destroy()}, 100);
+                                }, 750);
                             }
-                            if (Crafty('PlayerCharacter').hit('EnemyHitboxL')) {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.LEFT;
-                            }
-                            if (Crafty('PlayerCharacter').hit('EnemyHitboxU')) {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.UP;
-                            }
-                            if (Crafty('PlayerCharacter').hit('EnemyHitboxD')) {
-                                enemy._attackDirection = ATTACK_DIRECTIONS.DOWN;
-                            }
-                        })
+                        }
+
+                        this._leftHitbox.checkHits('Player')
+                            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.LEFT, -30, 0));
+                        this._rightHitbox.checkHits('Player')
+                            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.RIGHT, 30, 0));
+                        this._upHitbox.checkHits('Player')
+                            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.UP, 0, 30));
+                        this._downHitbox.checkHits('Player')
+                            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.DOWN, 0, -30));
 
                         enemy.bind('Moved', function(movement) {
                             var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
@@ -220,93 +241,103 @@
                                 enemy.velocity().y = 0
                             }
 
-                            var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
-                            var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
-
                         })
-
-                        Crafty('PlayerCharacter').checkHits('eAttackHitbox')
-                            .bind('HitOn', function() {
-                                var attack = Crafty.e('EnemyAttack');
-                                enemy.velocity().x = 0
-                                enemy.velocity().y = 0
-                                setTimeout (function() {
-                                    switch(enemy._attackDirection) {
-                                        case ATTACK_DIRECTIONS.RIGHT:
-                                                attack.attr({x: enemy.x + 30, y: enemy.y})
-                                                console.log('swing')
-                                                enemy.velocity().x = 1
-                                            break;
-                                        case ATTACK_DIRECTIONS.LEFT:
-                                            attack.attr({x: enemy.x - 30, y: enemy.y})
-                                            console.log('swing')
-                                            enemy.velocity().x = 1
-                                            break;
-                                        case ATTACK_DIRECTIONS.UP:
-                                            attack.attr({x: enemy.x, y: enemy.y + 30})
-                                            console.log('swing')
-                                            enemy.velocity().x = 1
-                                            break;
-                                        case ATTACK_DIRECTIONS.DOWN:
-                                            attack.attr({x: enemy.x, y: enemy.y - 30})
-                                            console.log('swing')
-                                            enemy.velocity().x = 1
-                                            break;
-                                    };
-                                    
-                                }, 750);
-                                setTimeout (function() {Crafty('EnemyAttack').destroy()}, 100);
-                            })
                     }
                 });
+
                 
-                Crafty.c('EnemyHitboxR', {
+                Crafty.c('EnemyHitbox', {
                     init: function() {
                         this.requires('2D, DOM, Collision, eAttackHitbox, Color')
                         .attr({ w: 30, h: 30})
-                    }
-                })
-
-                Crafty.c('EnemyHitboxL', {
-                    init: function() {
-                        this.requires('2D, DOM, Collision, eAttackHitbox, Color')
-                        .attr({ w: 30, h: 30})
-                    }
-                })
-
-                Crafty.c('EnemyHitboxU', {
-                    init: function() {
-                        this.requires('2D, DOM, Collision, eAttackHitbox, Color')
-                        .attr({ w: 30, h: 30})
-                    }
-                })
-
-                Crafty.c('EnemyHitboxD', {
-                    init: function() {
-                        this.requires('2D, DOM, Collision, eAttackHitbox, Color')
-                        .attr({ w: 30, h: 30})
+                        .color("yellow")
                     }
                 })
 
                 Crafty.c('EnemyAttack', {
                     init: function() {
-                        this.requires('2D, DOM, EAttack, Collision, Color')
+                        this.requires('2D, DOM, EAttack, Color')
                             .attr({ w: 30, h: 30})
                             .color('#ff0000')
+
+                        console.log('EnemyAttack object created')
                     }
                 });
 
                 var enemies = [];
 
-                Crafty.e('PlayerCharacter').attr({x: 285, y:285});
+                if (past1stScreen == true) {
+                    Crafty.e('PlayerCharacter').attr({x:newScreenSpawn, y: 1});
+                }
+                else {
+                    Crafty.e('PlayerCharacter').attr({x: 285, y:285});
+                }
+                enemies.push(
+                    Crafty.e('Enemy')
+                        .attr({x: 5, y: 5})
+                )
+
+                enemies.push(
+                    Crafty.e('Enemy')
+                        .attr({x: 300, y: 400})
+                )
+                enemies.push(
+                    Crafty.e('Enemy')
+                        .attr({x: 100, y: 565})
+                )
+
+                for (var i = 0; i < enemies.length; i++) {
+                    enemies[i].velocity().x = 1;
+                }
+                console.log(past1stScreen)
+            })
+            
+            Crafty.scene('1stScreen')
+
+            Crafty.scene('2ndScreen', function() {
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth, h: 1})
+                    .color('#F00')
+
+                //Terrain
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 50, y: 450, w: 70, h: 40})
+                    .color('#f4a460')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 120, y: 200, w: 80, h: 90})
+                    .color('#f4a460')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 350, y: 40, w: 30, h: 60})
+                    .color('#f4a460')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 500, y: 400, w: 50, h: 50})
+                    .color('#f4a460')
+
+                Crafty.e('PlayerCharacter')
+                    .attr({x:newScreenSpawn, y: viewHeight - 30})
+
+
+                var enemies = [];
+
                 enemies.push(
                     Crafty.e('Enemy')
                         .attr({x: 5, y: 5})
                         .addComponent('Enemy1')
-                        .attach(Crafty.e('EnemyHitboxR').attr({x: Crafty('Enemy1').x + 30, y: Crafty('Enemy1').y}))
-                        .attach(Crafty.e('EnemyHitboxL').attr({x: Crafty('Enemy1').x - 30, y: Crafty('Enemy1').y}))
-                        .attach(Crafty.e('EnemyHitboxU').attr({x: Crafty('Enemy1').x, y: Crafty('Enemy1').y + 30}))
-                        .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy1').x, y: Crafty('Enemy1').y - 30}))
+
                 )
                 enemies.push(
                     Crafty.e('Enemy')
@@ -327,21 +358,31 @@
                         .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy3').x, y: Crafty('Enemy3').y - 30}))
                 )
 
-
-
-
-
                 for (var i = 0; i < enemies.length; i++) {
                     enemies[i].velocity().x = 1;
                 }
+
             })
             
-            Crafty.scene('1stScreen')
+            var newScreenSpawn = 0
 
-            Crafty.scene('2ndScreen', function() {
-                
-            })
+            setTimeout(function() {
+                setInterval(function() {
+                    if (Crafty('PlayerCharacter').y < 0) {
+                        newScreenSpawn = Crafty('PlayerCharacter').x
+                        Crafty.scene('2ndScreen')
+                        past1stScreen = true
+                    }
+                    if (Crafty('PlayerCharacter').y > viewHeight - 30) {
+                        newScreenSpawn = Crafty('PlayerCharacter').x
+
+                        Crafty.scene('1stScreen')
+                    }
+                }, 50)
+            }, 2000)
+            
         </script>
+
     </body>
 
 </html>
