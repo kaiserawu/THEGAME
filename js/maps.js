@@ -128,9 +128,9 @@ Crafty.scene("4thScreen", function() {
         .attr({x: 350, y: 0, w: 200, h: viewHeight})
         .color('gray')
 
-    Crafty.e('ArrowShooter').attr({x: 5, y: 400})
-    Crafty.e('ArrowShooter').attr({x: 5, y: 300})
-    Crafty.e('ArrowShooter').attr({x: 5, y: 200})
+    Crafty.e('ArrowShooter').attr({x: 5, y: 400}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
+    Crafty.e('ArrowShooter').attr({x: 5, y: 300}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
+    Crafty.e('ArrowShooter').attr({x: 5, y: 200}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
 
 
 });
