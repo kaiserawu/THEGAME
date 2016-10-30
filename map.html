@@ -1,0 +1,326 @@
+<html>
+	<head>
+		<style type="text/css">
+            #game {
+                border: 1px solid black;
+            }
+        </style>
+	</head>
+	<body>
+        <div id="game"></div>
+        <script type="text/javascript" src="js/crafty.js"></script>
+        <script type="text/javascript" src="js/underscore-min.js"></script>
+        <script>
+        	var viewWidth = 600,
+                viewHeight = 600;
+
+			Crafty.init(viewWidth, viewHeight, document.getElementById('game'));  
+
+            //newGameSpawn = true
+
+            Crafty.c('PlayerCharacter', {
+                init: function() {
+                    this.requires('2D, DOM, Player, Collision, Fourway, Solid, Color, Persist')
+                        .attr({w: 30, h: 30})
+                        .fourway(300)
+                        .color('#000000')
+                        .stopOnSolids()
+                        .stopOnHoles()
+                },
+                stopOnSolids: function() {
+                    this.onHit('Solid', this.stopMovement);
+                    return this;
+                },
+                stopOnHoles: function() {
+                    this.onHit('Hole', this.stopMovement);
+                    return this;
+                },
+                stopMovement: function(hit_vals) {
+                    this.x -= this.dx;
+                    this.y -= this.dy;
+                }
+            });
+
+            Crafty.c('Projectile', {
+                init: function() {
+                    this.requires('2D, DOM, Projectile, Collision, Color, Motion')
+                        .attr({w: 5, h: 5})
+                        .color('#ff0000')
+                        .destroyOnSolids()
+                    this.velocity().x = 1
+                },
+                destroyOnSolids: function() {
+                    this.onHit('Solid', this.destroy);
+                    return this;
+                }
+            })
+
+            Crafty.c('ArrowShooter', {
+                init: function() {
+                    this.requires('2D, DOM, Color')
+                        .attr({w: 30, h: 30})
+                        .color('purple')
+                        .leftOrRight()
+                },
+                leftOrRight: function() {
+                    var shooter = this
+                    var player = Crafty('PlayerCharacter')
+                    setTimeout(function() {
+                        console.log(player.x)
+                        console.log(shooter.x)
+                        if (Crafty('PlayerCharacter').x > shooter.x) {
+                            setInterval(function() {
+                                Crafty.e('Projectile').attr({x: this.x + 12.5, y: this.y + 12.5})
+                            }, 500)
+                        }
+                    }, 500)
+                }
+            })
+
+            Crafty.scene("1stScreen", function() {
+
+                Crafty.e('PlayerCharacter').attr({x: 285, y: 285})
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth, h: 1})
+                    .color('#F00')
+
+                /*if (newGameSpawn == true) {
+                    Crafty.e('PlayerCharacter').attr({x: 285, y: 285})
+                }
+                else {
+                    Crafty('PlayerCharacter').shift(0, -575)
+                }*/
+
+            });
+            
+            //Crafty.scene('1stScreen')
+
+            /*setInterval(function() {
+                if (Crafty('PlayerCharacter').y < 0) {
+                    Crafty.scene('2ndScreen')
+                    newGameSpawn = false
+                }
+                if (Crafty('PlayerCharacter').y > viewHeight - 30) {
+                    Crafty.scene('1stScreen')
+                }
+            }, 50)*/
+
+            Crafty.scene("2ndScreen", function() {
+
+                //Crafty('PlayerCharacter').shift(0, 575)
+
+                Crafty.e('PlayerCharacter').attr({x: 285, y: 400})
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight/4 - 30})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: viewHeight/4 + 30, w: 1, h: viewHeight*3/4})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                //Terrain
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: viewHeight/2, w: 400, h: 20})
+                    .color('brown')
+
+            });
+
+            //Crafty.scene("2ndScreen")
+
+            Crafty.scene("3rdScreen", function() {
+
+                //Crafty('PlayerCharacter').shift(0, 575)
+
+                Crafty.e('PlayerCharacter').attr({x: 400, y: 150})
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight/4 - 30})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: viewHeight/4 + 30, w: 1, h: viewHeight*3/4})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth, h: 1})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth, h: 1})
+                    .color('#F00')
+
+                //Terrain
+                Crafty.e('2D, DOM, Hole, Color')
+                    .attr({x: 200, y: 275, w: 400, h: 250})
+                    .color('gray')
+            });
+
+            Crafty.scene("3rdScreen")
+
+            Crafty.scene("4thScreen", function() {
+
+                var player = Crafty.e('PlayerCharacter').attr({x: 285, y: 400})
+                //console.log(player.x)
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                //Terrain
+                Crafty.e('2D, DOM, Hole, Color')
+                    .attr({x: 50, y: 0, w: 200, h: viewHeight})
+                    .color('gray')
+
+                Crafty.e('2D, DOM, Hole, Color')
+                    .attr({x: 350, y: 0, w: 200, h: viewHeight})
+                    .color('gray')
+
+                Crafty.e('ArrowShooter').attr({x: 5, y: 400})
+                Crafty.e('ArrowShooter').attr({x: 5, y: 300})
+                Crafty.e('ArrowShooter').attr({x: 5, y: 200})
+
+
+            });
+
+            Crafty.scene("4thScreen")
+
+            Crafty.scene("5thScreen", function() {
+
+                Crafty.e('PlayerCharacter').attr({x: 285, y: 400})
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                //Terrain
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 150, y: 150, w: 50, h: 50})
+                    .color('brown')
+                    
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 400, y: 150, w: 50, h: 50})
+                    .color('brown')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 400, y: 400, w: 50, h: 50})
+                    .color('brown')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 150, y: 400, w: 50, h: 50})
+                    .color('brown')
+
+            });
+
+            //Crafty.scene("5thScreen")
+
+            Crafty.scene("6thScreen", function() {
+
+                Crafty.e('PlayerCharacter').attr({x: 285, y: 500})
+
+                //Walls
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 599, y: 0, w: 1, h: viewHeight})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth, h: 1})
+                    .color('#F00')
+
+            });
+
+            //Crafty.scene("6thScreen")
+
+        </script>
+
+    </body>
+
+</html>

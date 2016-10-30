@@ -9,7 +9,7 @@
 	<body>
         <div id="game"></div>
         <script type="text/javascript" src="js/crafty.js"></script>
-
+        <script type="text/javascript" src="js/underscore-min.js"></script>
         <script>
         	var viewWidth = 600,
                 viewHeight = 600;
@@ -37,6 +37,12 @@
                     .attr({x: 599, y: 0, w: 1, h: viewHeight})
                     .color('#F00')
 
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 0, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
 
 
                 Crafty.e('2D, DOM, Solid, Color')
@@ -45,7 +51,7 @@
 
 
                 //Terrain
-                Crafty.e('2D, DOM, Solid, Color')
+                /*Crafty.e('2D, DOM, Solid, Color')
                 	.attr({x: 50, y: 450, w: 70, h: 40})
                 	.color('#f4a460')
 
@@ -59,7 +65,7 @@
 
                 Crafty.e('2D, DOM, Solid, Color')
                 	.attr({x: 500, y: 400, w: 50, h: 50})
-                	.color('#f4a460')
+                	.color('#f4a460')*/
 
 
                 
@@ -153,7 +159,7 @@
 
                 Crafty.c('Enemy', {
                 	init: function() {
-                		this.requires('2D, DOM, Enemy, Collision, Motion, Solid, Motion, Color')
+                		this.requires('2D, DOM, Enemy, Collision, Solid, Motion, Color')
                 			.color('#d3d3d3')
                 			.attr({w:30, h: 30})
                 			.stopOnSolids()
@@ -199,13 +205,17 @@
                             return function() {
                                 enemy._attackDirection = direction;
                             
-                                enemy.velocity().x = 0
-                                enemy.velocity().y = 0
+                                setTimeout(function() {
+                                    enemy.velocity().x = 0
+                                    enemy.velocity().y = 0
+                                }, 100)
+
 
                                 setTimeout (function() {
                                     var attack = Crafty.e('EnemyAttack').attr({x: enemy.x + x, y: enemy.y + y});
                                     setTimeout(function() {attack.destroy()}, 100);
-                                }, 750);
+                                    enemy.velocity().x = 1
+                                }, 200);
                             }
                         }
 
@@ -223,19 +233,19 @@
                             var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
 
                             if (enemy.x > Crafty('PlayerCharacter').x) {
-                                enemy.velocity().x = -100
+                                enemy.velocity().x = -300
                             }
                             if (enemy.x < Crafty('PlayerCharacter').x) {
-                                enemy.velocity().x = 100
+                                enemy.velocity().x = 300
                             } 
                             if (x_distance < 5) {
                                 enemy.velocity().x = 0
                             }
                             if (enemy.y > Crafty('PlayerCharacter').y) {
-                                enemy.velocity().y = -100
+                                enemy.velocity().y = -300
                             }
                             if (enemy.y < Crafty('PlayerCharacter').y) {
-                                enemy.velocity().y = 100
+                                enemy.velocity().y = 300
                             } 
                             if (y_distance < 5) {
                                 enemy.velocity().y = 0
@@ -250,7 +260,6 @@
                     init: function() {
                         this.requires('2D, DOM, Collision, eAttackHitbox, Color')
                         .attr({ w: 30, h: 30})
-                        .color("yellow")
                     }
                 })
 
@@ -258,7 +267,7 @@
                     init: function() {
                         this.requires('2D, DOM, EAttack, Color')
                             .attr({ w: 30, h: 30})
-                            .color('#ff0000')
+                            .color('yellow')
 
                         console.log('EnemyAttack object created')
                     }
@@ -272,7 +281,7 @@
                 else {
                     Crafty.e('PlayerCharacter').attr({x: 285, y:285});
                 }
-                enemies.push(
+                /*enemies.push(
                     Crafty.e('Enemy')
                         .attr({x: 5, y: 5})
                 )
@@ -284,12 +293,11 @@
                 enemies.push(
                     Crafty.e('Enemy')
                         .attr({x: 100, y: 565})
-                )
+                )*/
 
                 for (var i = 0; i < enemies.length; i++) {
                     enemies[i].velocity().x = 1;
                 }
-                console.log(past1stScreen)
             })
             
             Crafty.scene('1stScreen')
@@ -305,6 +313,12 @@
                     .attr({x: 599, y: 0, w: 1, h: viewHeight})
                     .color('#F00')
 
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: 0, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
+                Crafty.e('2D, DOM, Solid, Color')
+                    .attr({x: viewWidth/2 + 30, y: 599, w: viewWidth/2 - 30, h: 1})
+                    .color('#F00')
 
                 Crafty.e('2D, DOM, Solid, Color')
                     .attr({x: 0, y: 0, w: viewWidth, h: 1})
@@ -336,26 +350,14 @@
                 enemies.push(
                     Crafty.e('Enemy')
                         .attr({x: 5, y: 5})
-                        .addComponent('Enemy1')
-
                 )
                 enemies.push(
                     Crafty.e('Enemy')
                         .attr({x: 300, y: 400})
-                        .addComponent('Enemy2')
-                        .attach(Crafty.e('EnemyHitboxR').attr({x: Crafty('Enemy2').x + 30, y: Crafty('Enemy2').y}))
-                        .attach(Crafty.e('EnemyHitboxL').attr({x: Crafty('Enemy2').x - 30, y: Crafty('Enemy2').y}))
-                        .attach(Crafty.e('EnemyHitboxU').attr({x: Crafty('Enemy2').x, y: Crafty('Enemy2').y + 30}))
-                        .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy2').x, y: Crafty('Enemy2').y - 30}))
                 )
                 enemies.push(
                     Crafty.e('Enemy')
                         .attr({x: 100, y: 565})
-                        .addComponent('Enemy3')
-                        .attach(Crafty.e('EnemyHitboxR').attr({x: Crafty('Enemy3').x + 30, y: Crafty('Enemy3').y}))
-                        .attach(Crafty.e('EnemyHitboxL').attr({x: Crafty('Enemy3').x - 30, y: Crafty('Enemy3').y}))
-                        .attach(Crafty.e('EnemyHitboxU').attr({x: Crafty('Enemy3').x, y: Crafty('Enemy3').y + 30}))
-                        .attach(Crafty.e('EnemyHitboxD').attr({x: Crafty('Enemy3').x, y: Crafty('Enemy3').y - 30}))
                 )
 
                 for (var i = 0; i < enemies.length; i++) {
