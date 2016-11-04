@@ -7,6 +7,7 @@ Crafty.c('PlayerCharacter', {
             .stopOnSolids()
             .attackOnSpace()
             .hitByAttack()
+            .hitByProjectile()
             .stopOnHoles()
 
         this.hp = 5
@@ -60,19 +61,32 @@ Crafty.c('PlayerCharacter', {
         });
         return this;
     },
-    hitByAttack: function() {
-        this.checkHits('EAttack')
-        .bind('HitOn', function() {
-            console.log("hit!")
-            console.log(arguments);
-            this.hp--;
-            console.log("remaining hp", this.hp)
+    takeDamage: function(dam){
+        this.hp -= dam
+        console.log("remaining hp", this.hp)
             if (this.hp <= 0) {
                 this.destroy();
                 Crafty.stop();
                 alert('You Lose!')
             }
+    },
+    hitByAttack: function() {
+        this.checkHits('EAttack')
+        .bind('HitOn', function() {
+            console.log("hit!")
+            console.log(arguments);
+            this.takeDamage(1);
+            console.log("remaining hp", this.hp)
         })
+        return this;
+    },
+    hitByProjectile: function() {
+        this.onHit('Projectile', function(hits) {
+            this.takeDamage(1);
+            for (var i = 0, l = hits.length; i < l; i++) {
+                hits[i].obj.destroy();
+            }
+        });
         return this;
     },
     stopOnHoles: function() {

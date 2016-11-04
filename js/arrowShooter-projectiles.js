@@ -3,11 +3,11 @@ Crafty.c('Projectile', {
         this.requires('2D, DOM, Projectile, Collision, Color, Motion')
             .attr({w: 5, h: 5})
             .color('#ff0000')
-            .destroyOnSolids()
+            .destroyOnObjects()
         this.velocity().x = 1
     },
-    destroyOnSolids: function() {
-        this.onHit('Solid', this.destroy);
+    destroyOnObjects: function() {
+        this.onHit('Object', this.destroy);
         return this;
     }
 })

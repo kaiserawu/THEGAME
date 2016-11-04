@@ -1,10 +1,11 @@
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('2D, DOM, Enemy, Collision, Solid, Motion, Color')
+		this.requires('2D, DOM, Enemy, Collision, Solid, Object, Motion, Color')
 			.color('#d3d3d3')
 			.attr({w:30, h: 30})
 			.stopOnSolids()
-			.hitByAttack();
+			.hitByAttack()
+            .stopOnHoles()
 
         this._rightHitbox = Crafty.e('EnemyHitbox').attr({x: this.x + 30, y: this.y});
         this._leftHitbox = Crafty.e('EnemyHitbox').attr({x: this.x - 30, y: this.y});
@@ -20,6 +21,10 @@ Crafty.c('Enemy', {
 	},
 	stopOnSolids: function() {
         this.onHit('Solid', this.stopMovement);
+        return this;
+    },
+    stopOnHoles: function() {
+        this.onHit('Hole', this.stopMovement);
         return this;
     },
     stopMovement: function(hit_vals) {
@@ -38,7 +43,6 @@ Crafty.c('Enemy', {
         })
         return this;
     },
-    //Not Working ATM
     combat: function() {
         var enemy = this;
 
