@@ -7,7 +7,7 @@ Crafty.c('REnemy', {
 			.hitByAttack()
 			.stopOnHoles()
 			.rEnemyMovement()
-			.rEnemyAttack()
+			.rEnemyAttackLoop()
 
 		this.hp = 2;
 	},
@@ -30,7 +30,9 @@ Crafty.c('REnemy', {
             this.hp--;
             console.log("remaining hp", this.hp)
             if (this.hp <= 0) {
+            	clearInterval(this._attackInterval)
                 this.destroy();
+
             }
         })
         return this;
@@ -59,19 +61,25 @@ Crafty.c('REnemy', {
     	})
     	return this;
     },
-    rEnemyAttack: function() {
+    rEnemyAttackLoop: function() {
     	var rEnemy = this
     	var player = Crafty('PlayerCharacter')
 
-    	setInterval(function() {
+    	this._attackInterval = setInterval(function() {
     		rEnemy.velocity().x = 0
     		rEnemy.velocity().y = 0
-    		rEnemy.rEnemyTargeting()
-    		rEnemy.velocity().x = 1
+
+    		setTimeout(function() { 
+    			rEnemy.rEnemyAttack();
+    			setTimeout(function() {
+    				rEnemy.velocity().x = 1
+    			}, 250) 
+    		}, 250);
+
     	}, 1000)
     	return this;
     },
-    rEnemyTargeting: function() {
+    rEnemyAttack: function() {
     	var rEnemy = this
     	var player = Crafty('PlayerCharacter')
 
@@ -79,6 +87,7 @@ Crafty.c('REnemy', {
     	var dy = player.y - rEnemy.y
     	var dist = Math.pow(Math.pow(dx, 2) + Math.pow(dy, 2), .5)
     	var multiplier = 100/dist
+    	console.log(dx, dy)
 
     	var projectile = Crafty.e('Projectile')
     	projectile.attr({x:rEnemy.x + 15, y:rEnemy.y + 15})
