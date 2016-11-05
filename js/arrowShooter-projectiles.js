@@ -1,14 +1,23 @@
 Crafty.c('Projectile', {
     init: function() {
         this.requires('2D, DOM, Projectile, Collision, Color, Motion')
-            .attr({w: 5, h: 5})
+            .attr({w: 10, h: 5})
             .color('#ff0000')
-            .destroyOnObjects()
+            .destroyOnImpen()
+            .pRotation()
         this.velocity().x = 1
     },
-    destroyOnObjects: function() {
-        this.onHit('Object', this.destroy);
+    destroyOnImpen: function() {
+        this.onHit('Impen', this.destroy);
         return this;
+    },
+    pRotation: function() {
+        var rEnemy = this
+        var player = Crafty('PlayerCharacter')
+
+        var dx = player.x - rEnemy.x
+        var dy = player.y - rEnemy.y
+        this.rotation = dy/dx * 180/Math.PI
     }
 })
 

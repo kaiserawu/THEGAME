@@ -1,6 +1,6 @@
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('2D, DOM, Enemy, Collision, Solid, Object, Motion, Color')
+		this.requires('2D, DOM, Enemy, Collision, Solid, Motion, Color')
 			.color('#d3d3d3')
 			.attr({w:30, h: 30})
 			.stopOnSolids()
@@ -45,6 +45,8 @@ Crafty.c('Enemy', {
     },
     combat: function() {
         var enemy = this;
+
+        enemy.velocity().x = 1
 
         var createAttackOnHit = function(direction, x, y) {
             return function() {
