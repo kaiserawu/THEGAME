@@ -213,6 +213,10 @@ Crafty.scene("6thScreen", function() {
         .attr({x: 0, y: 0, w: viewWidth, h: 1})
         .color('#F00')
 
+    //Enemies Etc.
+    Crafty.e('BEnemy').attr({x: viewWidth/2 - 25, y: 200})
+
+
 });
 
 /*enemies.push(
