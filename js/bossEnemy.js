@@ -7,10 +7,10 @@ Crafty.c('BEnemy', {
 			.hitByAttack()
             .stopOnHoles()
 
-        this._rightHitbox = Crafty.e('EnemyHitbox').attr({x: this.x + 50, y: this.y});
-        this._leftHitbox = Crafty.e('EnemyHitbox').attr({x: this.x - 50, y: this.y});
-        this._upHitbox = Crafty.e('EnemyHitbox').attr({x: this.x, y: this.y + 50});
-        this._downHitbox = Crafty.e('EnemyHitbox').attr({x: this.x, y: this.y - 50});
+        this._rightHitbox = Crafty.e('BEnemyHitbox').attr({x: this.x + 50, y: this.y});
+        this._leftHitbox = Crafty.e('BEnemyHitbox').attr({x: this.x - 50, y: this.y});
+        this._upHitbox = Crafty.e('BEnemyHitbox').attr({x: this.x, y: this.y + 50});
+        this._downHitbox = Crafty.e('BEnemyHitbox').attr({x: this.x, y: this.y - 50});
 
         this.attach(this._rightHitbox, this._leftHitbox, this._upHitbox, this._downHitbox);
 
@@ -77,10 +77,11 @@ Crafty.c('BEnemy', {
 
         enemy.velocity().x = 1
 
-        var createAttackOnHit = function(direction, x, y) {
-            return function() {
-                enemy._attackDirection = direction;
-            
+        var currently_attacking = false;
+
+        var createAttackOnHit = function(x, y) {
+            if (!currently_attacking) {
+                currently_attacking = true
                 setTimeout(function() {
                     enemy.velocity().x = 0
                     enemy.velocity().y = 0
@@ -88,21 +89,24 @@ Crafty.c('BEnemy', {
 
 
                 setTimeout (function() {
-                    var attack = Crafty.e('EnemyAttack').attr({x: enemy.x + x, y: enemy.y + y});
-                    setTimeout(function() {attack.destroy()}, 100);
+                    var attack = Crafty.e('BEnemyAttack').attr({x: enemy.x + x, y: enemy.y + y});
+                    setTimeout(function() {
+                        attack.destroy();
+                        currently_attacking = false
+                    }, 100);
                     enemy.velocity().x = 1
-                }, 200);
+                }, 500);
             }
         }
 
         this._leftHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.LEFT, -50, 0));
+            .bind('HitOn', function() { createAttackOnHit(-50, 0) });
         this._rightHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.RIGHT, 50, 0));
+            .bind('HitOn', function() { createAttackOnHit(50, 0) });
         this._upHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.UP, 0, 50));
+            .bind('HitOn', function() { createAttackOnHit(0, 50) });
         this._downHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.DOWN, 0, -50));
+            .bind('HitOn', function() { createAttackOnHit(0, -50) });
 
         enemy.bind('Moved', function(movement) {
             var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
@@ -110,19 +114,19 @@ Crafty.c('BEnemy', {
             var distance = Math.sqrt(x_distance ** 2 + y_distance ** 2)
 
             if (enemy.x > Crafty('PlayerCharacter').x) {
-                enemy.velocity().x = -150
+                enemy.velocity().x = -100
             }
             if (enemy.x < Crafty('PlayerCharacter').x) {
-                enemy.velocity().x = 150
+                enemy.velocity().x = 100
             } 
             if (x_distance < 5) {
                 enemy.velocity().x = 0
             }
             if (enemy.y > Crafty('PlayerCharacter').y) {
-                enemy.velocity().y = -150
+                enemy.velocity().y = -100
             }
             if (enemy.y < Crafty('PlayerCharacter').y) {
-                enemy.velocity().y = 150
+                enemy.velocity().y = 100
             } 
             if (y_distance < 5) {
                 enemy.velocity().y = 0
@@ -135,18 +139,18 @@ Crafty.c('BEnemy', {
 });
 
 
-Crafty.c('EnemyHitbox', {
+Crafty.c('BEnemyHitbox', {
     init: function() {
         this.requires('2D, DOM, Collision, eAttackHitbox, Color')
         .attr({ w: 50, h: 50})
     }
 })
 
-Crafty.c('EnemyAttack', {
+Crafty.c('BEnemyAttack', {
     init: function() {
         this.requires('2D, DOM, EAttack, Color')
             .attr({ w: 50, h: 50})
-            .color('yellow')
+            .color('red')
 
         console.log('EnemyAttack object created')
     }

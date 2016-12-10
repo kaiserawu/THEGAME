@@ -22,6 +22,11 @@ Crafty.scene("1stScreen", function() {
         .attr({x: 0, y: 599, w: viewWidth, h: 1})
         .color('#F00')
 
+    //Enemies Etc.
+    Crafty.e('Enemy').attr({x: viewWidth/2 - 15, y: 100})
+    Crafty.e('Enemy').attr({x: viewWidth/2 - 15, y: 500})
+
+
 });
 
 Crafty.scene("2ndScreen", function() {

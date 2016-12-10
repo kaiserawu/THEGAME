@@ -48,10 +48,11 @@ Crafty.c('Enemy', {
 
         enemy.velocity().x = 1
 
-        var createAttackOnHit = function(direction, x, y) {
-            return function() {
-                enemy._attackDirection = direction;
-            
+        var currently_attacking = false;
+
+        var createAttackOnHit = function(x, y) {
+            if (!currently_attacking) {
+                currently_attacking = true
                 setTimeout(function() {
                     enemy.velocity().x = 0
                     enemy.velocity().y = 0
@@ -60,39 +61,42 @@ Crafty.c('Enemy', {
 
                 setTimeout (function() {
                     var attack = Crafty.e('EnemyAttack').attr({x: enemy.x + x, y: enemy.y + y});
-                    setTimeout(function() {attack.destroy()}, 100);
+                    setTimeout(function() {
+                        attack.destroy();
+                        currently_attacking = false
+                    }, 100);
                     enemy.velocity().x = 1
                 }, 200);
             }
         }
 
         this._leftHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.LEFT, -30, 0));
+            .bind('HitOn', function() { createAttackOnHit(-30, 0) });
         this._rightHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.RIGHT, 30, 0));
+            .bind('HitOn', function() { createAttackOnHit(30, 0) });
         this._upHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.UP, 0, 30));
+            .bind('HitOn', function() { createAttackOnHit(0, 30) });
         this._downHitbox.checkHits('Player')
-            .bind('HitOn', createAttackOnHit(ATTACK_DIRECTIONS.DOWN, 0, -30));
+            .bind('HitOn', function() { createAttackOnHit(0, -30) });
 
         enemy.bind('Moved', function(movement) {
             var x_distance = Math.abs(enemy.x - Crafty('PlayerCharacter').x);
             var y_distance = Math.abs(enemy.y - Crafty('PlayerCharacter').y);
 
             if (enemy.x > Crafty('PlayerCharacter').x) {
-                enemy.velocity().x = -300
+                enemy.velocity().x = -100
             }
             if (enemy.x < Crafty('PlayerCharacter').x) {
-                enemy.velocity().x = 300
+                enemy.velocity().x = 100
             } 
             if (x_distance < 5) {
                 enemy.velocity().x = 0
             }
             if (enemy.y > Crafty('PlayerCharacter').y) {
-                enemy.velocity().y = -300
+                enemy.velocity().y = -100
             }
             if (enemy.y < Crafty('PlayerCharacter').y) {
-                enemy.velocity().y = 300
+                enemy.velocity().y = 100
             } 
             if (y_distance < 5) {
                 enemy.velocity().y = 0
@@ -114,7 +118,7 @@ Crafty.c('EnemyAttack', {
     init: function() {
         this.requires('2D, DOM, EAttack, Color')
             .attr({ w: 30, h: 30})
-            .color('yellow')
+            .color('red')
 
         console.log('EnemyAttack object created')
     }

@@ -99,6 +99,6 @@ Crafty.c('PlayerAttack', {
 	init: function() {
 		this.requires('2D, DOM, PAttack, Collision, Color')
 			.attr({w: 30, h: 30})
-			.color('#ff0000')
+			.color('yellow')
 	}
 });
