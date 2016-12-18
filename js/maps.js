@@ -1,6 +1,12 @@
+var startGame = true
 Crafty.scene("1stScreen", function() {
 
-    Crafty.e('PlayerCharacter').attr({x: 285, y: 285})
+    if (startGame) {
+        Crafty.e('PlayerCharacter').attr({x: 285, y: 285})
+        startGame = false
+    }
+
+    changeSceneUp("2ndScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -31,7 +37,10 @@ Crafty.scene("1stScreen", function() {
 
 Crafty.scene("2ndScreen", function() {
 
-    Crafty.e('PlayerCharacter').attr({x: 285, y: 400})
+    changeSceneDown("1stScreen")
+    changeSceneUp("4thScreen")
+    changeSceneLeft("3rdScreen")
+
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -64,11 +73,14 @@ Crafty.scene("2ndScreen", function() {
         .attr({x: 0, y: viewHeight/2, w: 400, h: 20})
         .color('brown')
 
+    //Enemies Etc.
+    Crafty.e('Enemy').attr({x: viewWidth/2 - 15, y: 100})
+
 });
 
 Crafty.scene("3rdScreen", function() {
 
-    Crafty.e('PlayerCharacter').attr({x: 500, y: 150})
+    changeSceneRight("2ndScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -101,9 +113,8 @@ Crafty.scene("3rdScreen", function() {
 });
 
 Crafty.scene("4thScreen", function() {
-
-    var player = Crafty.e('PlayerCharacter').attr({x: 285, y: 400})
-    //console.log(player.x)
+    changeSceneDown("2ndScreen")
+    changeSceneUp("5thScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -138,7 +149,7 @@ Crafty.scene("4thScreen", function() {
         .color('gray')
 
     //Enemies Etc.
-    Crafty.e('ArrowShooter').attr({x: 5, y: 400}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
+    Crafty.e('ArrowShooter').attr({x: 5, y: 400}).direction(ATTACK_DIRECTIONS.RIGHT).start();
     Crafty.e('ArrowShooter').attr({x: 5, y: 300}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
     Crafty.e('ArrowShooter').attr({x: 5, y: 200}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
 
@@ -150,7 +161,8 @@ Crafty.scene("4thScreen", function() {
 
 Crafty.scene("5thScreen", function() {
 
-    Crafty.e('PlayerCharacter').attr({x: 285, y: 400})
+    changeSceneDown("4thScreen")
+    changeSceneUp("6thScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -196,7 +208,7 @@ Crafty.scene("5thScreen", function() {
 
 Crafty.scene("6thScreen", function() {
 
-    Crafty.e('PlayerCharacter').attr({x: 285, y: 500})
+    changeSceneDown("5thScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')

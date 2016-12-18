@@ -1,6 +1,6 @@
 Crafty.c('PlayerCharacter', {
     init: function() {
-        this.requires('2D, DOM, Player, Collision, Fourway, Solid, Color')
+        this.requires('2D, DOM, Player, Collision, Fourway, Solid, Color, Persist')
             .attr({w: 30, h: 30})
             .fourway(300)
             .color('#000000')
