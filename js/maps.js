@@ -116,6 +116,8 @@ Crafty.scene("4thScreen", function() {
     changeSceneDown("2ndScreen")
     changeSceneUp("5thScreen")
 
+    Crafty.e('PlayerCharacter').attr({x: 300, y: 300})
+
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
         .attr({x: 0, y: 0, w: 1, h: viewHeight})
@@ -149,7 +151,7 @@ Crafty.scene("4thScreen", function() {
         .color('gray')
 
     //Enemies Etc.
-    Crafty.e('ArrowShooter').attr({x: 5, y: 400}).direction(ATTACK_DIRECTIONS.RIGHT).start();
+    Crafty.e('ArrowShooter').attr({x: 5, y: 400}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
     Crafty.e('ArrowShooter').attr({x: 5, y: 300}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
     Crafty.e('ArrowShooter').attr({x: 5, y: 200}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
 

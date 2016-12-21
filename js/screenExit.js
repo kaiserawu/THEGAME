@@ -20,7 +20,7 @@ function changeSceneUp(scene) {
     setInterval(function(){ 
         if (Crafty('PlayerCharacter').y < 0) {
 			Crafty.scene(scene)
-			Crafty('PlayerCharacter').shift(0, viewHeight - 20)
+			Crafty('PlayerCharacter').shift(0, viewHeight - 30)
         }
     }, 50)
 }
