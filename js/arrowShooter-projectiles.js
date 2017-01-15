@@ -31,11 +31,16 @@ Crafty.c('ArrowShooter', {
 
         var shooter = this
 
-        var shooterFire = setInterval(function() {
+        var shootingInterval = setInterval(function() {
             var bullet = Crafty.e('Projectile').attr({x: shooter.x + 12.5, y: shooter.y + 12.5});
             bullet.velocity().x = bulletVelocities[shooter.direction].x;
             bullet.velocity().y = bulletVelocities[shooter.direction].y;
         }, 500);
+
+        this.bind("Remove", function() {
+            clearInterval(shootingInterval)
+            console.log("Interval Removed")
+        });
         return this;
     }
 })

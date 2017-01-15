@@ -30,9 +30,7 @@ Crafty.c('REnemy', {
             this.hp--;
             console.log("remaining hp", this.hp)
             if (this.hp <= 0) {
-            	clearInterval(this._attackInterval)
                 this.destroy();
-
             }
         })
         return this;
@@ -77,6 +75,10 @@ Crafty.c('REnemy', {
     		}, 250);
 
     	}, 1000)
+        this.bind("Remove", function() {
+            clearInterval(this._attackInterval)
+            console.log("Interval Removed")
+        });
     	return this;
     },
     rEnemyAttack: function() {
@@ -87,12 +89,10 @@ Crafty.c('REnemy', {
     	var dy = player.y - rEnemy.y
     	var dist = Math.pow(Math.pow(dx, 2) + Math.pow(dy, 2), .5)
     	var multiplier = 100/dist
-    	console.log(dx, dy)
 
     	var projectile = Crafty.e('Projectile')
     	projectile.attr({x:rEnemy.x + 15, y:rEnemy.y + 15})
     	projectile.rotation = Math.atan(dy/dx) * 180/Math.PI
-    	console.log(projectile.rotation)
     	projectile.velocity().x = dx*multiplier
     	projectile.velocity().y = dy*multiplier
     	return this;
