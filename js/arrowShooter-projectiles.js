@@ -4,21 +4,12 @@ Crafty.c('Projectile', {
             .attr({w: 10, h: 5})
             .color('#ff0000')
             .destroyOnImpen()
-            .pRotation()
         this.velocity().x = 1
     },
     destroyOnImpen: function() {
         this.onHit('Impen', this.destroy);
         return this;
     },
-    pRotation: function() {
-        var rEnemy = this
-        var player = Crafty('PlayerCharacter')
-
-        var dx = player.x - rEnemy.x
-        var dy = player.y - rEnemy.y
-        this.rotation = dy/dx * 180/Math.PI
-    }
 })
 
 Crafty.c('ArrowShooter', {
@@ -40,7 +31,7 @@ Crafty.c('ArrowShooter', {
 
         var shooter = this
 
-        setInterval(function() {
+        var shooterFire = setInterval(function() {
             var bullet = Crafty.e('Projectile').attr({x: shooter.x + 12.5, y: shooter.y + 12.5});
             bullet.velocity().x = bulletVelocities[shooter.direction].x;
             bullet.velocity().y = bulletVelocities[shooter.direction].y;

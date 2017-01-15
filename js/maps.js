@@ -6,7 +6,11 @@ Crafty.scene("1stScreen", function() {
         startGame = false
     }
 
-    changeSceneUp("2ndScreen")
+    //changeSceneUp("2ndScreen")
+
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 1})
+        .enterRoom("2ndScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -37,9 +41,19 @@ Crafty.scene("1stScreen", function() {
 
 Crafty.scene("2ndScreen", function() {
 
-    changeSceneDown("1stScreen")
-    changeSceneUp("4thScreen")
-    changeSceneLeft("3rdScreen")
+    //changeSceneDown("1stScreen")
+    //changeSceneUp("4thScreen")
+    //changeSceneLeft("3rdScreen")
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 1})
+        .enterRoom("4thScreen")
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 599})
+        .enterRoom("1stScreen")
+    Crafty.e('Doorway')
+        .attr({x: 1, y: viewHeight/4 - 25, rotation: 90})
+        .enterRoom("3rdScreen")
+
 
 
     //Walls
@@ -80,7 +94,11 @@ Crafty.scene("2ndScreen", function() {
 
 Crafty.scene("3rdScreen", function() {
 
-    changeSceneRight("2ndScreen")
+    //changeSceneRight("2ndScreen")
+    Crafty.e('Doorway')
+        .attr({x: 599, y: viewHeight/4 - 25, rotation: 90})
+        .enterRoom("2ndScreen")
+
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -113,10 +131,16 @@ Crafty.scene("3rdScreen", function() {
 });
 
 Crafty.scene("4thScreen", function() {
-    changeSceneDown("2ndScreen")
-    changeSceneUp("5thScreen")
 
-    Crafty.e('PlayerCharacter').attr({x: 300, y: 300})
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 1})
+        .enterRoom("5thScreen")
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 599})
+        .enterRoom("2ndScreen")
+
+    //changeSceneDown("2ndScreen")
+    //changeSceneUp("5thScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -163,8 +187,14 @@ Crafty.scene("4thScreen", function() {
 
 Crafty.scene("5thScreen", function() {
 
-    changeSceneDown("4thScreen")
-    changeSceneUp("6thScreen")
+    //changeSceneDown("4thScreen")
+    //changeSceneUp("6thScreen")
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 1})
+        .enterRoom("6thScreen")
+    Crafty.e('Doorway')
+        .attr({x: viewWidth/2 - 20, y: 599})
+        .enterRoom("4thScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -210,7 +240,7 @@ Crafty.scene("5thScreen", function() {
 
 Crafty.scene("6thScreen", function() {
 
-    changeSceneDown("5thScreen")
+    //changeSceneDown("5thScreen")
 
     //Walls
     Crafty.e('2D, DOM, Solid, Impen, Color')
@@ -223,6 +253,9 @@ Crafty.scene("6thScreen", function() {
 
     Crafty.e('2D, DOM, Solid, Impen, Color')
         .attr({x: 0, y: 599, w: viewWidth/2 - 30, h: 1})
+        .color('#F00')
+    Crafty.e('2D, DOM, Solid, Impen, Color')
+        .attr({x: viewWidth/2 - 20, y: 599,  w: 40, h: 1})
         .color('#F00')
     Crafty.e('2D, DOM, Solid, Impen, Color')
         .attr({x: viewWidth/2 + 30, y: 599, w: viewWidth/2 - 30, h: 1})
