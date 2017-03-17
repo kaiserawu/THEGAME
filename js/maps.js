@@ -1,5 +1,6 @@
 var startGame = true
 Crafty.scene("1stScreen", function() {
+    generateFloor();
 
     if (startGame) {
         Crafty.e('PlayerCharacter').attr({x: 285, y: 285})
@@ -117,7 +118,7 @@ Crafty.scene("3rdScreen", function() {
     //Terrain
     Crafty.e('2D, DOM, Hole, Color')
         .attr({x: 200, y: 275, w: 400, h: 250})
-        .color('gray')
+        .color('#262626')
 
     //Enemies Etc.
     Crafty.e('REnemy').attr({x: 100, y: 150})
@@ -159,11 +160,11 @@ Crafty.scene("4thScreen", function() {
     //Terrain
     Crafty.e('2D, DOM, Hole, Color')
         .attr({x: 50, y: 0, w: 200, h: viewHeight})
-        .color('gray')
+        .color('#262626')
 
     Crafty.e('2D, DOM, Hole, Color')
         .attr({x: 350, y: 0, w: 200, h: viewHeight})
-        .color('gray')
+        .color('#262626')
 
     //Enemies Etc.
     Crafty.e('ArrowShooter').attr({x: 5, y: 400}).shootingDirection(ATTACK_DIRECTIONS.RIGHT).start();
@@ -224,6 +225,11 @@ Crafty.scene("5thScreen", function() {
     Crafty.e('2D, DOM, Solid, Impen, Color')
         .attr({x: 150, y: 400, w: 50, h: 50})
         .color('brown')
+
+    //Enemies Etc.
+    Crafty.e('Enemy').attr({x: viewWidth/5 - 15, y: viewHeight/2 - 15})
+    Crafty.e('Enemy').attr({x: viewWidth - viewWidth/5 + 15, y: viewHeight/2 - 15})
+    Crafty.e('Enemy').attr({x: viewWidth/2 - 15, y: 100})
 
 });
 

@@ -1,7 +1,7 @@
 Crafty.c('REnemy', {
 	init: function() {
-		this.requires('2D, DOM, REnemy, Collision, Solid, Motion, Color')
-			.color('#e0e0e0')
+		this.requires('2D, DOM, REnemy, Collision, Solid, Motion, Color, enemySprite')
+//			.color('#e0e0e0')
 			.attr({w:30, h: 30})
 			.stopOnSolids()
 			.hitByAttack()

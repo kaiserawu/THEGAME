@@ -1,14 +1,26 @@
 Crafty.c('PlayerCharacter', {
     init: function() {
-        this.requires('2D, DOM, Player, Collision, Fourway, Solid, Color, Persist')
+        this.requires('2D, DOM, Player, Collision, Fourway, Solid, Color, Persist, pcSprite, SpriteAnimation')
             .attr({w: 30, h: 30})
             .fourway(300)
-            .color('#000000')
+//            .color('#000000')
             .stopOnSolids()
             .attackOnSpace()
             .hitByAttack()
             .hitByProjectile()
             .stopOnHoles()
+            .reel('Move Down', 1000, 3, 0, 3)
+            .bind('enterframe', function(e) {
+                if(this.isDown('DOWN_ARROW')) {
+                    console.log("moving down")
+                    if(!this.isPlaying('Move Down')) {
+                        this.stop().animate('Move Down', -1);
+                    };
+                };
+            })
+            .bind('keyup', function(e) {
+                this.stop();
+            })
 
         this.hp = 5
         this._attackDirection = ATTACK_DIRECTIONS.DOWN;
