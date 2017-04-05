@@ -9,18 +9,39 @@ Crafty.c('PlayerCharacter', {
             .hitByAttack()
             .hitByProjectile()
             .stopOnHoles()
-            .reel('Move Down', 1000, 3, 0, 3)
-            .bind('enterframe', function(e) {
+            .reel('Move Up', 200, [[3,3], [4,3], [5,3], [4,3]])
+            .reel('Move Down', 200, [[3,0], [4,0], [5,0], [4,0]])
+            .reel('Move Left', 200, [[3,1], [4,1], [5,1], [4,1]])
+            .reel('Move Right', 200, [[3,2], [4,2], [5,2], [4,2]])
+            .bind('EnterFrame', function(e) {
+                if(this.isDown('UP_ARROW')) {
+                    console.log("moving up");
+                    if(!this.isPlaying('Move Up')) {
+                        this.animate('Move Up', 1);
+                    };
+                };
                 if(this.isDown('DOWN_ARROW')) {
-                    console.log("moving down")
+                    console.log("moving down");
                     if(!this.isPlaying('Move Down')) {
-                        this.stop().animate('Move Down', -1);
+                        this.animate('Move Down', 1);
+                    };
+                };
+                if(this.isDown('LEFT_ARROW')) {
+                    console.log("moving left");
+                    if(!this.isPlaying('Move Left')) {
+                        this.animate('Move Left', 1);
+                    };
+                };
+                if(this.isDown('RIGHT_ARROW')) {
+                    console.log("moving right");
+                    if(!this.isPlaying('Move Right')) {
+                        this.animate('Move Right', 1);
                     };
                 };
             })
-            .bind('keyup', function(e) {
-                this.stop();
-            })
+            /*.bind('KeyUp', function(e) {
+                this.pauseAnimation();
+            })*/
 
         this.hp = 5
         this._attackDirection = ATTACK_DIRECTIONS.DOWN;
