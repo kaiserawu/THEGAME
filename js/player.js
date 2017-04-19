@@ -3,7 +3,6 @@ Crafty.c('PlayerCharacter', {
         this.requires('2D, DOM, Player, Collision, Fourway, Solid, Color, Persist, pcSprite, SpriteAnimation')
             .attr({w: 30, h: 30})
             .fourway(300)
-//            .color('#000000')
             .stopOnSolids()
             .attackOnSpace()
             .hitByAttack()
@@ -15,33 +14,27 @@ Crafty.c('PlayerCharacter', {
             .reel('Move Right', 200, [[3,2], [4,2], [5,2], [4,2]])
             .bind('EnterFrame', function(e) {
                 if(this.isDown('UP_ARROW')) {
-                    console.log("moving up");
                     if(!this.isPlaying('Move Up')) {
                         this.animate('Move Up', 1);
                     };
                 };
                 if(this.isDown('DOWN_ARROW')) {
-                    console.log("moving down");
                     if(!this.isPlaying('Move Down')) {
                         this.animate('Move Down', 1);
                     };
                 };
                 if(this.isDown('LEFT_ARROW')) {
-                    console.log("moving left");
                     if(!this.isPlaying('Move Left')) {
                         this.animate('Move Left', 1);
                     };
                 };
                 if(this.isDown('RIGHT_ARROW')) {
-                    console.log("moving right");
                     if(!this.isPlaying('Move Right')) {
                         this.animate('Move Right', 1);
                     };
                 };
             })
-            /*.bind('KeyUp', function(e) {
-                this.pauseAnimation();
-            })*/
+
 
         this.hp = 5
         this._attackDirection = ATTACK_DIRECTIONS.DOWN;

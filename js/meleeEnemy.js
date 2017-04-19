@@ -1,11 +1,36 @@
 Crafty.c('Enemy', {
 	init: function() {
-		this.requires('2D, DOM, Enemy, Collision, Solid, Motion, Color, enemySprite')
-//			.color('#d3d3d3')
+		this.requires('2D, DOM, Enemy, Collision, Solid, Motion, Color, enemySprite, SpriteAnimation')
 			.attr({w:30, h: 30})
 			.stopOnSolids()
 			.hitByAttack()
             .stopOnHoles()
+            .reel('Move Up', 200, [[9,3], [10,3], [11,3], [10,3]])
+            .reel('Move Down', 200, [[9,0], [10,0], [11,0], [10,0]])
+            .reel('Move Left', 200, [[9,1], [10,1], [11,1], [10,1]])
+            .reel('Move Right', 200, [[9,2], [10,2], [11,2], [10,2]])
+            .bind('EnterFrame', function(e) {
+                if(this.dx < 0) {
+                    if(!this.isPlaying('Move Left')) {
+                        this.animate('Move Left', 1);
+                    };
+                }
+                else if(this.dx > 0) {
+                    if(!this.isPlaying('Move Right')) {
+                        this.animate('Move Right', 1);
+                    };
+                }
+                else if(this.dy < 0) {
+                    if(!this.isPlaying('Move Up')) {
+                        this.animate('Move Up', 1);
+                    };
+                }
+                else if(this.dy > 0) {
+                    if(!this.isPlaying('Move Down')) {
+                        this.animate('Move Down', 1);
+                    };
+                }
+            })
 
         this._rightHitbox = Crafty.e('EnemyHitbox').attr({x: this.x + 30, y: this.y});
         this._leftHitbox = Crafty.e('EnemyHitbox').attr({x: this.x - 30, y: this.y});
